@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consulta Lista GVI</title>
+  <style>
+    :root { --fundo:#f4f5f7; --cartao:#fff; --texto:#1d2330; --suave:#667085;
+            --borda:#d9dde3; --destaque:#1f4fd1; --erro:#b42318; --aviso:#b54708; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, sans-serif; background:var(--fundo); color:var(--texto); }
+    main { max-width: 520px; margin: 32px auto; padding: 0 16px; }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; }
+    .info { color: var(--suave); font-size: .9rem; margin: 0 0 20px; }
+    .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:20px; margin-bottom:16px; }
+    label { display:block; font-weight:600; margin: 12px 0 4px; }
+    input, select { width:100%; padding:10px; font-size:1rem; border:1px solid var(--borda); border-radius:6px; }
+    button { margin-top:16px; width:100%; padding:12px; font-size:1rem; border:0; border-radius:6px;
+             background:var(--destaque); color:#fff; cursor:pointer; }
+    .erro { color: var(--erro); font-weight:600; }
+    .aviso { color: var(--aviso); font-weight:600; }
+    .posicao { font-size: 3rem; font-weight: 700; color: var(--destaque); line-height:1; }
+    dl { display:grid; grid-template-columns: auto 1fr; gap:6px 16px; margin:16px 0 0; }
+    dt { color: var(--suave); }
+    dd { margin:0; font-weight:600; }
+    .opcao { background:none; color:var(--destaque); border:1px solid var(--borda); text-align:left; margin-top:8px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Consulta Lista GVI</h1>
+  {% if arquivo %}
+    <p class="info">{{ total }} pessoas na lista{% if data_extracao %} · extraída em {{ data_extracao }}{% endif %}</p>
+  {% else %}
+    <p class="info erro">Nenhum PDF encontrado na pasta do projeto.</p>
+  {% endif %}
+
+  <form class="cartao" action="/consultar" method="post">
+    <label for="nome">Nome de guerra</label>
+    <input id="nome" name="nome" value="{{ nome or '' }}" required autofocus>
+    <label for="base">Base</label>
+    <select id="base" name="base" required>
+      {% for b in bases %}
+        <option value="{{ b }}" {% if b == base %}selected{% endif %}>{{ b }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Consultar</button>
+  </form>
+
+  {% if erro %}
+    <div class="cartao erro">{{ erro }}</div>
+  {% endif %}
+
+  {% if opcoes %}
+    <div class="cartao">
+      <p>Encontrei {{ opcoes|length }} pessoas. Qual é você?</p>
+      {% for p in opcoes %}
+        <form action="/consultar" method="post">
+          <input type="hidden" name="nome" value="{{ p.nome }}">
+          <input type="hidden" name="base" value="{{ p.base }}">
+          <input type="hidden" name="sen" value="{{ p.sen }}">
+          <button class="opcao" type="submit">{{ p.nome }} — {{ p.cargo }} · SEN {{ p.sen }}</button>
+        </form>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if pessoa %}
+    <div class="cartao">
+      {% if fila.idioma_valido %}
+        <div>Posição na fila</div>
+        <div class="posicao">{{ fila.posicao }}º</div>
+        <p>{{ fila.a_frente }} pessoa(s) à frente, de {{ fila.total_fila }} na fila {{ pessoa.cargo }} {{ pessoa.base }}.</p>
+      {% else %}
+        <p class="aviso">Idioma vencido: você não entra na fila agora.</p>
+        <p>Com idioma válido, sua posição seria <strong>{{ fila.posicao }}º</strong>
+           ({{ fila.a_frente }} à frente, de {{ fila.total_fila }} na fila {{ pessoa.cargo }} {{ pessoa.base }}).</p>
+      {% endif %}
+      <dl>
+        <dt>Nome</dt><dd>{{ pessoa.nome }}</dd>
+        <dt>Cargo</dt><dd>{{ pessoa.cargo }}</dd>
+        <dt>SEN</dt><dd>{{ pessoa.sen }}</dd>
+        <dt>Base</dt><dd>{{ pessoa.base }}</dd>
+        <dt>Idioma</dt><dd>{{ pessoa.idioma }}</dd>
+      </dl>
+    </div>
+  {% endif %}
+
+  {% if arquivo %}<p class="info">Arquivo: {{ arquivo }}</p>{% endif %}
+</main>
+</body>
+</html>

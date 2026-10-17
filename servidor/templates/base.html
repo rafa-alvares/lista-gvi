@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e2a47">
+<title>{% block titulo %}Lista GVI{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>
+/*
+  Conceito: cartão de embarque. Uma coluna alinhada à esquerda.
+  Cabeçalho em letra larga (sinalização de aeroporto) sobre faixa azul-cabine;
+  o resultado é um bilhete com canhoto picotado, onde a posição na fila ocupa o lugar do assento.
+  Ousadia num lugar só: o bilhete. O resto é quieto.
+*/
+:root {
+  --cabine: #0e2a47;      /* azul da faixa e do texto forte */
+  --ceu: #e6edf4;         /* fundo da página */
+  --papel: #ffffff;       /* bilhete e formulário */
+  --tinta: #0f1c2e;       /* texto */
+  --apagado: #5c6b7d;     /* texto secundário */
+  --linha: #ccd6e1;       /* divisões */
+  --pista: #ff6a13;       /* laranja de pista: só destaque */
+  --sobre-pista: #1a0d04;
+  --alerta: #9a4a00;
+  --alerta-fundo: #fff1e4;
+  --ok: #16784a;
+  --fonte: "Archivo", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cabine: #0a1d33; --ceu: #0b1522; --papel: #13233a; --tinta: #e7edf4; --apagado: #96a6b9;
+    --linha: #26405f; --pista: #ff7a2b; --sobre-pista: #1a0d04; --alerta: #ffb36b; --alerta-fundo: #2b1b0c; --ok: #4fcb8d;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ceu); color: var(--tinta);
+  font-family: var(--fonte); font-size: 17px; line-height: 1.5; font-variant-numeric: tabular-nums;
+}
+.miolo { max-width: 620px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left)); padding-right: max(18px, env(safe-area-inset-right)); }
+
+/* Faixa do topo */
+.faixa { background: var(--cabine); color: #fff; padding-block: max(28px, env(safe-area-inset-top)) 64px; }
+.faixa h1 {
+  margin: 0; font-weight: 800; font-stretch: 125%; font-size: clamp(2.6rem, 9vw, 4.2rem);
+  line-height: .95; letter-spacing: -.01em; text-wrap: balance;
+}
+.faixa p { margin: 12px 0 0; color: #b9c8d8; font-size: 16px; max-width: 46ch; }
+.faixa p strong { color: #fff; font-weight: 600; }
+
+main.miolo { display: flex; flex-direction: column; gap: 28px; margin-top: -40px; padding-bottom: 40px; }
+h2 { margin: 0 0 10px; font-size: 1.15rem; font-weight: 700; font-stretch: 110%; }
+.nota { color: var(--apagado); font-size: 14px; margin: 10px 0 0; max-width: 60ch; }
+.aviso { padding: 14px 16px; border-radius: 12px; background: var(--alerta-fundo); color: var(--alerta); font-weight: 600; }
+
+.credito { border-top: 1px solid var(--linha); padding-top: 18px; color: var(--apagado); font-size: 14px; }
+.credito strong { color: var(--tinta); font-weight: 600; }
+
+:focus-visible { outline: 3px solid var(--pista); outline-offset: 2px; }
+{% block estilo %}{% endblock %}
+</style>
+</head>
+<body>
+  <header class="faixa">
+    <div class="miolo">
+      {% block cabecalho %}{% endblock %}
+    </div>
+  </header>
+  <main class="miolo">
+    {% block conteudo %}{% endblock %}
+    <footer class="credito">Desenvolvido por <strong>Raphael Alvares</strong></footer>
+  </main>
+</body>
+</html>

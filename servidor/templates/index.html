@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block estilo %}
+/* Formulário */
+form.busca {
+  background: var(--papel); border-radius: 16px; padding: 22px; display: grid; gap: 18px;
+  box-shadow: 0 1px 0 var(--linha), 0 18px 40px -24px rgba(14, 42, 71, .45);
+}
+.campo { display: grid; gap: 6px; min-width: 0; }
+.rotulo { font-size: 15px; font-weight: 600; color: var(--tinta); }
+.campo input {
+  font: inherit; font-size: 1.25rem; font-weight: 600; font-stretch: 110%; letter-spacing: .02em; text-transform: uppercase;
+  padding: 14px 14px; border: 2px solid var(--linha); border-radius: 10px; background: var(--ceu); color: var(--tinta); width: 100%;
+}
+.campo input::placeholder { color: var(--apagado); font-weight: 500; text-transform: none; letter-spacing: 0; font-stretch: 100%; }
+.campo input:focus { border-color: var(--cabine); outline: none; }
+@media (prefers-color-scheme: dark) { .campo input:focus { border-color: var(--pista); } }
+
+.bases { border: 0; padding: 0; margin: 0; min-width: 0; }
+.bases legend { padding: 0; margin-bottom: 6px; }
+.segmentos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: var(--ceu); border-radius: 10px; padding: 4px; gap: 4px; }
+.segmentos label { position: relative; }
+.segmentos input { position: absolute; opacity: 0; pointer-events: none; }
+.segmentos span {
+  display: block; text-align: center; padding: 10px 0; border-radius: 7px; cursor: pointer;
+  font-weight: 700; font-stretch: 115%; font-size: 15px; color: var(--apagado);
+}
+.segmentos input:checked + span { background: var(--cabine); color: #fff; }
+@media (prefers-color-scheme: dark) { .segmentos input:checked + span { background: var(--pista); color: var(--sobre-pista); } }
+.segmentos input:focus-visible + span { outline: 3px solid var(--pista); outline-offset: 1px; }
+
+button.consultar {
+  font: inherit; font-weight: 700; font-stretch: 112%; font-size: 1.05rem; padding: 15px; border: 0; border-radius: 10px;
+  background: var(--pista); color: var(--sobre-pista); cursor: pointer;
+}
+button.consultar:active { transform: translateY(1px); }
+
+.vazio { color: var(--apagado); margin: 0; }
+
+/* Bilhete */
+.bilhete {
+  display: grid; grid-template-columns: minmax(0, 1fr) 196px; background: var(--papel); border-radius: 16px;
+  box-shadow: 0 1px 0 var(--linha), 0 22px 44px -26px rgba(14, 42, 71, .55);
+  position: relative; overflow: hidden;
+}
+.bilhete .corpo { padding: 20px 22px; display: grid; gap: 16px; min-width: 0; }
+.bilhete .topo { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; border-bottom: 2px solid var(--cabine); padding-bottom: 10px; }
+@media (prefers-color-scheme: dark) { .bilhete .topo { border-color: var(--linha); } }
+.bilhete .topo span { font-weight: 800; font-stretch: 125%; font-size: 15px; color: var(--cabine); }
+@media (prefers-color-scheme: dark) { .bilhete .topo span { color: var(--tinta); } }
+.bilhete .topo small { font-size: 13px; color: var(--apagado); }
+.passageiro small, .dados dt, .canhoto small { display: block; font-size: 12px; color: var(--apagado); font-weight: 500; }
+.passageiro b { display: block; font-size: 1.55rem; font-weight: 800; font-stretch: 112%; line-height: 1.1; overflow-wrap: anywhere; }
+.dados { display: grid; grid-template-columns: repeat(4, minmax(0, auto)); justify-content: start; gap: 6px 26px; margin: 0; }
+.dados dd { margin: 0; font-weight: 700; font-stretch: 115%; font-size: 1.05rem; }
+.dados dd.ok { color: var(--ok); }
+.dados dd.venc { color: var(--alerta); }
+
+.canhoto {
+  border-left: 2px dashed var(--linha); padding: 20px 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+  background: linear-gradient(var(--papel), var(--papel)) padding-box; position: relative;
+}
+/* picote: dois semicírculos na linha do corte */
+.bilhete::before, .bilhete::after {
+  content: ""; position: absolute; right: 187px; width: 18px; height: 18px; border-radius: 50%; background: var(--ceu);
+}
+.bilhete::before { top: -9px; }
+.bilhete::after { bottom: -9px; }
+.posicao { font-weight: 800; font-stretch: 125%; font-size: 4rem; line-height: .85; color: var(--pista); letter-spacing: -.02em; }
+.posicao sup { font-size: 1.3rem; vertical-align: top; margin-left: 2px; }
+.canhoto p { margin: 0; font-size: 14px; color: var(--apagado); line-height: 1.35; }
+.canhoto p b { color: var(--tinta); font-size: 1.1rem; font-weight: 800; }
+.trilha { height: 6px; background: var(--ceu); border-radius: 3px; overflow: hidden; }
+.trilha i { display: block; height: 100%; background: var(--pista); }
+.alerta { grid-column: 1 / -1; margin: 0; padding: 12px 22px; background: var(--alerta-fundo); color: var(--alerta); font-weight: 600; font-size: 15px; }
+
+@media (max-width: 520px) {
+  .bilhete { grid-template-columns: 1fr; }
+  .canhoto { border-left: 0; border-top: 2px dashed var(--linha); flex-direction: row; align-items: flex-end; flex-wrap: wrap; }
+  .canhoto > div:first-child { flex: 1 1 auto; }
+  .canhoto > div:last-child { flex: 1 1 140px; }
+  .bilhete::before, .bilhete::after { display: none; }
+  .dados { grid-template-columns: repeat(2, minmax(0, auto)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bilhete { animation: imprime .45s cubic-bezier(.2, .8, .2, 1); transform-origin: top; }
+  @keyframes imprime { from { clip-path: inset(0 0 100% 0); transform: translateY(-8px); } to { clip-path: inset(0 0 0 0); transform: none; } }
+}
+
+/* Escolha entre nomes repetidos */
+.opcoes { background: var(--papel); border-radius: 16px; padding: 8px 8px 4px; box-shadow: 0 1px 0 var(--linha); }
+.opcoes > p { margin: 10px 12px; color: var(--apagado); font-size: 15px; }
+.opcoes form { margin: 0; }
+.opcoes button {
+  font: inherit; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--linha); color: var(--tinta);
+  padding: 13px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-radius: 0;
+}
+.opcoes button:hover { background: var(--ceu); }
+.opcoes button b { font-weight: 700; font-stretch: 108%; }
+.opcoes button span { font-size: 14px; color: var(--apagado); white-space: nowrap; }
+
+/* Tamanho das filas */
+.filas { display: grid; gap: 2px; background: var(--papel); border-radius: 16px; padding: 6px 18px; box-shadow: 0 1px 0 var(--linha); }
+.fila { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--linha); }
+.fila:last-child { border-bottom: 0; }
+.fila .sigla { font-weight: 800; font-stretch: 125%; font-size: 15px; }
+.fila .barras { display: grid; gap: 4px; min-width: 0; }
+.fila .barras i { display: block; height: 7px; border-radius: 4px; min-width: 3px; }
+.fila .barras .aux { background: var(--cabine); }
+@media (prefers-color-scheme: dark) { .fila .barras .aux { background: #6d9ccc; } }
+.fila .barras .chc { background: var(--pista); }
+.fila .num { font-size: 14px; color: var(--apagado); text-align: right; white-space: nowrap; }
+.fila .num b { color: var(--tinta); font-weight: 700; }
+.legenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--apagado); margin: 0 0 10px; }
+.legenda span::before { content: ""; display: inline-block; width: 12px; height: 7px; border-radius: 4px; margin-right: 6px; vertical-align: middle; }
+.legenda .l-aux::before { background: var(--cabine); }
+@media (prefers-color-scheme: dark) { .legenda .l-aux::before { background: #6d9ccc; } }
+.legenda .l-chc::before { background: var(--pista); }
+{% endblock %}
+
+{% block cabecalho %}
+  <h1>Lista GVI</h1>
+  {% if arquivo %}
+    <p>Veja sua posição na fila de standby. Lista atualizada em <strong>{{ data_extracao or 'data não informada' }}</strong>, com {{ '{:,}'.format(total).replace(',', '.') }} pessoas.</p>
+  {% else %}
+    <p>A lista ainda não foi carregada no servidor.</p>
+  {% endif %}
+{% endblock %}
+
+{% block conteudo %}
+  <form class="busca" action="/consultar" method="post" autocomplete="off">
+    <div class="campo">
+      <label class="rotulo" for="nome">Nome de guerra</label>
+      <input type="text" id="nome" name="nome" value="{{ nome or '' }}" placeholder="Como aparece na lista" required autocapitalize="characters" spellcheck="false">
+    </div>
+    <fieldset class="bases">
+      <legend class="rotulo">Base</legend>
+      <div class="segmentos">
+        {% for b in bases %}
+          <label><input type="radio" name="base" id="base-{{ b }}" value="{{ b }}" {% if b == base %}checked{% endif %}><span>{{ b }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <button type="submit" class="consultar">Ver minha posição</button>
+  </form>
+
+  {% if erro %}
+    <div class="aviso" role="alert">{{ erro }}</div>
+  {% elif opcoes %}
+    <div class="opcoes">
+      <p>{{ total_opcoes }} pessoas em {{ base }} combinam com esse nome. Toque no seu.</p>
+      {% for p in opcoes %}
+        <form action="/consultar" method="post">
+          <input type="hidden" name="nome" value="{{ p.nome }}">
+          <input type="hidden" name="base" value="{{ p.base }}">
+          <input type="hidden" name="sen" value="{{ p.sen }}">
+          <button type="submit"><b>{{ p.nome }}</b><span>{{ p.cargo }}, SEN {{ p.sen }}</span></button>
+        </form>
+      {% endfor %}
+      {% if mais %}<p>Mostrando os 60 primeiros. Digite o nome completo para achar mais rápido.</p>{% endif %}
+    </div>
+  {% elif pessoa %}
+    <article class="bilhete" aria-label="Resultado da consulta">
+      <div class="corpo">
+        <div class="topo"><span>STANDBY GVI</span><small>Lista de {{ data_extracao }}</small></div>
+        <div class="passageiro"><small>Nome de guerra</small><b>{{ pessoa.nome }}</b></div>
+        <dl class="dados">
+          <div><dt>Cargo</dt><dd>{{ pessoa.cargo }}</dd></div>
+          <div><dt>SEN</dt><dd>{{ pessoa.sen }}</dd></div>
+          <div><dt>Base</dt><dd>{{ pessoa.base }}</dd></div>
+          <div><dt>Idioma</dt><dd class="{{ 'ok' if fila.idioma_valido else 'venc' }}">{{ 'Válido' if fila.idioma_valido else 'Vencido' }}</dd></div>
+        </dl>
+      </div>
+      <div class="canhoto">
+        <div>
+          <small>{{ 'Posição na fila' if fila.idioma_valido else 'Posição com idioma válido' }}</small>
+          <div class="posicao">{{ fila.posicao }}<sup>º</sup></div>
+        </div>
+        <div>
+          <p><b>{{ fila.a_frente }}</b> à frente de {{ fila.total_fila }} na fila {{ pessoa.cargo }} {{ pessoa.base }}</p>
+          <div class="trilha" aria-hidden="true"><i style="width: {{ progresso }}%"></i></div>
+        </div>
+      </div>
+      {% if not fila.idioma_valido %}
+        <p class="alerta">Seu idioma está vencido. Você só entra na fila depois de renovar.</p>
+      {% endif %}
+    </article>
+  {% else %}
+    <p class="vazio">Digite seu nome de guerra, escolha a base e toque em "Ver minha posição".</p>
+  {% endif %}
+
+  <section>
+    <h2>Tamanho das filas</h2>
+    <p class="legenda"><span class="l-aux">AUX com idioma válido</span><span class="l-chc">CHC com idioma válido</span></p>
+    {% set maior = (resumo | map(attribute='aux') | max) or 1 %}
+    <div class="filas">
+      {% for r in resumo %}
+        <div class="fila">
+          <span class="sigla">{{ r.base }}</span>
+          <div class="barras" aria-hidden="true">
+            <i class="aux" style="width: {{ (r.aux / maior * 100) | round(1) }}%"></i>
+            <i class="chc" style="width: {{ (r.chc / maior * 100) | round(1) }}%"></i>
+          </div>
+          <span class="num"><b>{{ r.aux }}</b> AUX, <b>{{ r.chc }}</b> CHC</span>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="nota">Cada fila tem só quem é do mesmo cargo e da mesma base, com idioma válido, na ordem de SEN. Quem está com idioma vencido não entra na contagem.</p>
+  </section>
+{% endblock %}

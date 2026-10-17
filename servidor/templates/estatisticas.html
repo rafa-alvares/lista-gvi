@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block titulo %}Estatísticas Lista GVI{% endblock %}
+
+{% block estilo %}
+.numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--papel); border-radius: 16px; box-shadow: 0 1px 0 var(--linha), 0 18px 40px -24px rgba(14, 42, 71, .45); }
+.numeros div { padding: 18px 20px; min-width: 0; }
+.numeros div + div { border-left: 1px solid var(--linha); }
+.numeros b { display: block; font-weight: 800; font-stretch: 125%; font-size: 2.2rem; line-height: 1; }
+.numeros div:first-child b { color: var(--pista); }
+.numeros span { font-size: 14px; color: var(--apagado); }
+.dias { background: var(--papel); border-radius: 16px; padding: 6px 18px; box-shadow: 0 1px 0 var(--linha); }
+.dia { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: 15px; }
+.dia:last-child { border-bottom: 0; }
+.dia .data { font-weight: 700; }
+.dia i { display: block; height: 8px; border-radius: 4px; background: var(--pista); min-width: 2px; }
+.dia .num { color: var(--apagado); font-size: 14px; white-space: nowrap; }
+.dia .num b { color: var(--tinta); }
+@media (max-width: 440px) { .numeros { grid-template-columns: 1fr; } .numeros div + div { border-left: 0; border-top: 1px solid var(--linha); } }
+{% endblock %}
+
+{% block cabecalho %}
+  <h1>Estatísticas</h1>
+  <p>Visível só para você. Lista no ar: <strong>{{ data_extracao or arquivo or 'nenhuma' }}</strong>.</p>
+{% endblock %}
+
+{% block conteudo %}
+  <section class="numeros">
+    <div><b>{{ est.acessos }}</b><span>acessos</span></div>
+    <div><b>{{ est.visitantes }}</b><span>visitantes</span></div>
+    <div><b>{{ est.consultas }}</b><span>consultas</span></div>
+  </section>
+
+  <section>
+    <h2>Últimos 14 dias</h2>
+    <div class="dias">
+      {% for d in est.dias %}
+        <div class="dia">
+          <span class="data">{{ d.dia }}</span>
+          <i style="width: {{ (d.acessos / est.maior * 100) | round(1) }}%"></i>
+          <span class="num"><b>{{ d.acessos }}</b> acessos, {{ d.visitantes }} pessoas, {{ d.consultas }} consultas</span>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="nota">Visitantes conta pessoas diferentes por dia sem guardar IP nem nome. As consultas não registram o nome pesquisado.</p>
+  </section>
+{% endblock %}

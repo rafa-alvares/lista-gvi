@@ -1,0 +1,23 @@
+# Dados pessoais da lista (nomes e SEN): nunca vão para o GitHub
+*.pdf
+site/
+*.zip
+
+# Estatísticas e logs
+estatisticas.db
+*.log
+atualizar_log.txt
+
+# Executável e arquivos gerados pelo PyInstaller
+dist/
+build/
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Cópias antigas
+backup_antes_melhorias/
